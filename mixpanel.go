@@ -37,6 +37,14 @@ type ExportQueryResult struct {
 	Properties map[string]interface{} `json:properties`
 }
 
+type SegmentationQueryResult struct {
+	LegendSize int `json:"legend_size"`
+	Data       struct {
+		Series []string                  `json:"series"`
+		Values map[string]map[string]int `json:"values"`
+	} `json:data`
+}
+
 type TopEventsResult struct {
 	Type   string `json:"type"`
 	Events []struct {
@@ -113,7 +121,7 @@ func (m *Mixpanel) makeRequest(action string, params map[string]string) ([]byte,
 	// fmt.Println(resp.Header)
 	defer resp.Body.Close()
 	bytes, err := ioutil.ReadAll(resp.Body)
-	// fmt.Println(string(bytes))
+	fmt.Println(string(bytes))
 	return bytes, err
 }
 
@@ -164,6 +172,19 @@ func (m *Mixpanel) PeopleQuery(params map[string]string) map[string]interface{} 
 	var raw map[string]interface{}
 	json.Unmarshal([]byte(str), &raw)
 	return raw
+}
+
+func (m *Mixpanel) SegmentationQuery(params map[string]string) (SegmentationQueryResult, error) {
+	m.BaseUrl = "http://mixpanel.com/api/2.0"
+	bytes, err := m.makeRequest("segmentation", params)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var result SegmentationQueryResult
+	err = json.Unmarshal(bytes, &result)
+	return result, err
 }
 
 func (m *Mixpanel) TopEvents(params map[string]string) (TopEventsResult, error) {
