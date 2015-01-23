@@ -46,6 +46,8 @@ type TopEventsResult struct {
 	} `json:events`
 }
 
+type CommonEventsResult []string
+
 func NewMixpanel(key string, secret string) *Mixpanel {
 	m := new(Mixpanel)
 	m.Secret = secret
@@ -179,17 +181,19 @@ func (m *Mixpanel) TopEvents(params map[string]string) (TopEventsResult, error) 
 
 }
 
-func (m *Mixpanel) MostCommonEventsLast31Days(params map[string]string) string {
+func (m *Mixpanel) MostCommonEventsLast31Days(params map[string]string) (CommonEventsResult, error) {
 	m.BaseUrl = "http://mixpanel.com/api/2.0"
-	bytes, err := m.makeRequest("events/top", params)
+	bytes, err := m.makeRequest("events/names", params)
 
 	if err != nil {
 		panic(err)
 	}
 
-	str := string(bytes)
+	var result CommonEventsResult
 
-	return str
+	err = json.Unmarshal(bytes, &result)
+
+	return result, err
 
 }
 
