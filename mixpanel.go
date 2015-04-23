@@ -78,7 +78,14 @@ func (m *Mixpanel) AddSig(params *map[string]string) {
   (*params)["sig"] = sigHex
 }
 
-func (m *Mixpanel) makeRequest(action string, params map[string]string) ([]byte, error) {
+func (m *Mixpanel) MakeRequest(action string, params map[string]string) ([]byte, error) {
+  event, ok := params["event"]
+  if ok {
+    events := strings.Split(event, ",")
+    bytes, _ := json.Marshal(events)
+    params["event"] = string(bytes)
+  }
+  
   m.AddExpire(&params)
   m.AddSig(&params)
   
@@ -115,7 +122,7 @@ func ExpireInHours(hours int64) int64 {
 
 func (m *Mixpanel) EventQuery(params map[string]string) (EventQueryResult,error) {
   m.BaseUrl = "http://mixpanel.com/api/2.0"
-  bytes, err := m.makeRequest("events/properties", params)
+  bytes, err := m.MakeRequest("events/properties", params)
   // fmt.Println(string(bytes))
   var result EventQueryResult
   err = json.Unmarshal(bytes, &result)
@@ -125,9 +132,10 @@ func (m *Mixpanel) EventQuery(params map[string]string) (EventQueryResult,error)
 func (m *Mixpanel) ExportQuery(params map[string]string) []ExportQueryResult {
   m.BaseUrl = "http://data.mixpanel.com/api/2.0"
   var results []ExportQueryResult
-  bytes, _ := m.makeRequest("export", params)
+  bytes, _ := m.MakeRequest("export", params)
   str := string(bytes)
   // fmt.Println(str)
+  
   for _, s := range strings.Split(str, "\n") {
     var result ExportQueryResult
     json.Unmarshal([]byte(s),&result)
@@ -138,7 +146,7 @@ func (m *Mixpanel) ExportQuery(params map[string]string) []ExportQueryResult {
 
 func (m *Mixpanel) PeopleQuery(params map[string]string) map[string]interface{} {
   m.BaseUrl = "http://mixpanel.com/api/2.0"
-  bytes, _ := m.makeRequest("engage", params)
+  bytes, _ := m.MakeRequest("engage", params)
   str := string(bytes)
   // fmt.Println(str)
   var raw map[string]interface{}
