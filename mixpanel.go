@@ -99,7 +99,8 @@ func (m *Mixpanel) AddSig(params *map[string]string) {
 
 func (m *Mixpanel) MakeRequest(action string, params map[string]string) ([]byte, error) {
   event, ok := params["event"]
-  if ok {
+  delete(params, "event")
+  if ok && event != "" {
     events := strings.Split(event, ",")
     bytes, err := json.Marshal(events)
     if err != nil {
@@ -127,14 +128,15 @@ func (m *Mixpanel) MakeRequest(action string, params map[string]string) ([]byte,
   if err != nil {
     return bytes, err
   }
-  // req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+  req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
   resp, err := client.Do(req)
   if err != nil {
     return bytes, err
   }
-  // fmt.Println(resp.Header)
+  // fmt.Printf("%+v",resp)
   defer resp.Body.Close()
   bytes, err = ioutil.ReadAll(resp.Body)
+  // fmt.Println(string(bytes))
   return bytes, err
 }
   
@@ -156,13 +158,12 @@ func (m *Mixpanel) ExportQuery(params map[string]string) ([]ExportQueryResult, e
   if err != nil {
     return results, err
   }
-
   str := string(bytes)
   for _, s := range strings.Split(str, "\n") {
     var result ExportQueryResult
     err := json.Unmarshal([]byte(s),&result)
     if err != nil {
-      return results, err
+      // ignore this error, extra line or one event being bad
     }
     results = append(results, result)
   }

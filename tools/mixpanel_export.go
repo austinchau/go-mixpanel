@@ -6,7 +6,6 @@ import (
   "flag"  
   "os"
   "io/ioutil"
-  // "encoding/json"
 )
 
 var (
@@ -41,12 +40,11 @@ func main() {
     "to_date": end,
   }
   
-  if event != "" {
-    params["event"] = event
-  }
-
   m.BaseUrl = "http://data.mixpanel.com/api/2.0"
-  bytes, _ := m.MakeRequest("export", params)
+  bytes, err := m.MakeRequest("export", params)
+  if err != nil {
+    panic(err)
+  }
   if output == "" {
     fmt.Println(string(bytes))
   } else {
@@ -54,6 +52,6 @@ func main() {
     if err != nil {
       fmt.Println(err.Error())
       os.Exit(1)
-    }    
+    }
   }
 }
