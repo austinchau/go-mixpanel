@@ -72,6 +72,7 @@ func (m *Mixpanel) AddExpire(params *map[string]string) {
 }
 
 func (m *Mixpanel) AddSig(params *map[string]string) {
+  delete(*params, "sig")
 	keys := make([]string, 0)
 
 	(*params)["api_key"] = m.ApiKey
