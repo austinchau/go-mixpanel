@@ -33,7 +33,7 @@ func main() {
 }
 ```
 
-** To install commandline tool to dump data using MixPanel Data Export API **
+** Install commandline tool **
 
 
 ```
