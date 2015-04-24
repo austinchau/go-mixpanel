@@ -33,7 +33,7 @@ func main() {
 }
 ```
 
-** Install commandline tool **
+## Install Commandline Tool
 
 
 ```
