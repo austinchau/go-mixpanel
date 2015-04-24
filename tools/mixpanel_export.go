@@ -38,6 +38,7 @@ func main() {
   params := map[string]string{
     "from_date": start,
     "to_date": end,
+    "event": event,
   }
   
   m.BaseUrl = "http://data.mixpanel.com/api/2.0"
