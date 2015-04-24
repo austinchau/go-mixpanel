@@ -190,6 +190,9 @@ func (m *Mixpanel) UserInfo(id string) (map[string]interface{}, error) {
   if err != nil {
     return result, err
   }
+  if len(result["results"].([]interface{})) == 0 {
+    return make(map[string]interface{}), nil
+  }
   return result["results"].([]interface{})[0].(map[string]interface{})["$properties"].(map[string]interface{}), nil
 }
 
