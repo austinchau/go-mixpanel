@@ -1,7 +1,7 @@
 go-mixpanel
 ===========
 
-Golang client for Mixpanel API
+    Golang client for Mixpanel ...API
 
 
 ## Getting Started
